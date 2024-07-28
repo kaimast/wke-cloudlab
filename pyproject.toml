@@ -1,0 +1,15 @@
+[project]
+name = "wke-cloudlab"
+version = "0.1"
+dependencies=['wke']
+requires-python=">=3.11"
+
+[metadata]
+author = "Kai Mast"
+author_email = "kai@kaimast.com"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project.scripts]
+wke-cloudlab = "wke_cloudlab.bin.cmd:main"
