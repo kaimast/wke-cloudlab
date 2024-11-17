@@ -9,8 +9,9 @@ from wke_cloudlab import create_cluster, generate_profile, extract_config
 from wke_cloudlab.config import get_defaults
 
 def _create_cluster(args):
-    create_cluster(args.project, args.username, args.certfile, args.slicename,
-                   args.num_nodes, args.hardware_type, args.os_image)
+    create_cluster(args.project, args.username, args.certfile,
+          args.num_nodes, args.hardware_type, args.os_image,
+          slicename=args.slicename)
 
 def _generate_profile(args):
     generate_profile(args.num_nodes, args.hardware_type, args.os_image,
@@ -35,14 +36,16 @@ def main():
     create_cluster_args = subparsers.add_parser('create-cluster',
         help='Will create a new cluster on cloudlab and create a wke config file for it',
        formatter_class=formatter)
+    create_cluster_args.add_argument('--project', type=str, default=defaults.get("project", None))
     create_cluster_args.add_argument('--num-nodes', required=True, type=int)
     create_cluster_args.add_argument('--certfile', type=str, required=True)
-    create_cluster_args.add_argument('--hardware-type', default=defaults["hardware-type"],
+    create_cluster_args.add_argument('--slicename', type=str, required=False)
+    create_cluster_args.add_argument('--hardware-type', default=defaults.get("hardware-type", None),
         type=str, help="What type of hardware to use for nodes in the cluster?")
-    create_cluster_args.add_argument('--os-image', default=defaults["os-image"], type=str,
+    create_cluster_args.add_argument('--os-image', default=defaults.get("os-image", None), type=str,
         help="What OS to use for nodes in the cluster?")
     if defaults["username"] is not None:
-        create_cluster_args.add_argument('--username', default=defaults["username"],
+        create_cluster_args.add_argument('--username', default=defaults.get("username", None),
             type=str, help="The cloudlab username")
     else:
         create_cluster_args.add_argument('--username', required=True, type=str,
@@ -54,12 +57,14 @@ def main():
         help="Creates a cloudlab profile and store it as an XML file")
     generate_profile_args.add_argument('--num-nodes', required=True, type=int,
         help="How many nodes should the topology contain?")
-    generate_profile_args.add_argument('--hardware-type', default=defaults["hardware-type"],
-       type=str, help="What type of hardware to use for nodes in the topology?")
-    generate_profile_args.add_argument('--os-image', default=defaults["os-image"], type=str,
-       help="What OS to use for nodes in the topology?")
+    generate_profile_args.add_argument('--hardware-type',
+        default=defaults.get("hardware-type", None),
+        type=str, help="What type of hardware to use for nodes in the topology?")
+    generate_profile_args.add_argument('--os-image',
+        default=defaults.get("os-image", None), type=str,
+        help="What OS to use for nodes in the topology?")
     generate_profile_args.add_argument('--outfile', default='./cloudlab_profile.xml', type=str,
-       help="What file should the Cloudlab profile be written to?")
+        help="What file should the Cloudlab profile be written to?")
     generate_profile_args.set_defaults(func=_generate_profile)
 
     extract_config_args = subparsers.add_parser('extract-config',
